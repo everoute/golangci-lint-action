@@ -36,6 +36,8 @@ async function fetchPatch(): Promise<string> {
 
   switch (ctx.eventName) {
     case `pull_request`:
+      core.info(JSON.stringify(ctx.payload))
+      return ``
     case `pull_request_target`:
       return await fetchPullRequestPatch(ctx)
     case `push`:
@@ -211,6 +213,13 @@ async function runLint(lintPath: string, patchPath: string): Promise<void> {
 
     switch (ctx.eventName) {
       case `pull_request`:
+        const pr = ctx.payload.pull_request
+        if (pr) {
+          addedArgs.push(`--new-from-rev=${pr.base.sha}`)
+          addedArgs.push(`--new=false`)
+          addedArgs.push(`--new-from-patch=`)
+          break
+	}
       case `pull_request_target`:
       case `push`:
         if (patchPath) {
